@@ -1,6 +1,6 @@
 # Fall 2025 CS 3200 Project Template
 
-This is a template repo Fontenot's Fall 2025 CS 3200 Course Project. 
+This is a template repo for Dr. Fontenot's Fall 2025 CS 3200 Course Project. 
 
 It includes most of the infrastructure setup (containers), sample databases, and example UI pages. Explore it fully and ask questions!
 
@@ -39,12 +39,16 @@ It includes most of the infrastructure setup (containers), sample databases, and
 
 If you are not familiar with web app development, this code base might be confusing. But don't worry, we'll get through it together. Here are some suggestions for learning the code base:
 
-1. Have two versions of the template repo - one for you to individually explore and learn and another for your team's project implementation.
 1. Start by exploring the `./app` directory. This is where the Streamlit app is located. The Streamlit app is a Python-based web app that is used to interact with the user. It's a great way to build a simple web app without having to learn a lot of web development.
 1. Next, explore the `./api` directory. This is where the Flask REST API is located. The REST API is used to interact with the database and perform other server-side tasks. You might also consider this the "application logic" or "business logic" layer of your app. 
 1. Finally, explore the `./database-files` directory. This is where the SQL scripts are located that will be used to initialize the MySQL database.
+1. Bonus: If you want to have a totally separate copy of the Template Repo on your laptop that you can use to explore and try things without messing up your team repo, see *Setting Up a Personal Testing Repo (Optional)* section below. 
 
-### Setting Up Your Personal Testing Repo
+## Setting Up the Repos
+<details>
+<summary>Setting Up a Personal Testing Repo (Optional)</summary>
+
+### Setting Up A Personal Sandbox Repo (This is Optional)
 
 **Before you start**: You need to have a GitHub account and a terminal-based git client or GUI Git client such as GitHub Desktop or the Git plugin for VSCode.
 
@@ -61,6 +65,7 @@ If you are not familiar with web app development, this code base might be confus
    1. `docker compose -f sandbox.yaml down` to shutdown and delete the containers
    1. `docker compose -f sandbox.yaml up db -d` only start the database container (replace db with api or app for the other two services as needed)
    1. `docker compose -f sandbox.yaml stop` to "turn off" the containers but not delete them.
+</details>
 
 ### Setting Up Your Team's Repo
 
@@ -82,10 +87,21 @@ If you are not familiar with web app development, this code base might be confus
 
 **Note:** You can also use the Docker Desktop GUI to start and stop the containers after the first initial run.
 
+## Important Tips
+
+1. In general, any changes you make to the api code base (REST API) or the Streamlit app code should be *hot reloaded* when the files are saved.  This means that the changes should be immediately available.  
+   1. Don't forget to hit click the **Always Rerun** button in the browser tab of the Streamlit app for it to reload with changes. 
+   1. Sometimes, a bug in the code will shut the containers down.  If this is the case, try and fix the bug in the code.  Then you can restart the `web-app` container in Docker Desktop or restart all the containers with `docker compose restart` (no *-d* flag). 
+1. The MySQL Container is different. 
+   1. When the MySQL container is ***created*** the first time, it will execute any `.sql` files in the `./database-files` folder. **Important:** it will execute them in alphabetical order.  
+   1. The MySQL Container's log files are your friend! Remember, you can access them in Docker Desktop by going to the MySQL Container, and clicking on the `Logs` tab.  If there are errors in your .sql files as it is trying to run them, there will be a message in the logs. You can search 🔍 for `Error` to find them more quickly. 
+   1. If you need to update anything in any of your SQL files, you **MUST** recreate the MySQL container (rather than just stopping and restarting it).  You can recreate the MySQL container by using the following command: `docker compose down db -v && docker compose up db -d`. 
+      1. `docker compose down db -v` stops and deletes the MySQL container and the volume attached to it. 
+      1. `docker compose up db -d` will create a new db container and re-run the files in the `database-files` folder. 
 
 ## Handling User Role Access and Control
 
-In most applications, when a user logs in, they assume a particular role. For instance, when one logs in to a stock price prediction app, they may be a single investor, a portfolio manager, or a corporate executive (of a publicly traded company). Each of those _roles_ will likely present some similar features as well as some different features when compared to the other roles. So, how do you accomplish this in Streamlit? This is sometimes called Role-based Access Control, or **RBAC** for short.
+In most applications, when a user logs in, they assume a particular role in the app. For instance, when one logs in to a stock price prediction app, they may be a single investor, a portfolio manager, or a corporate executive (of a publicly traded company). Each of those _roles_ will likely present some similar features as well as some different features when compared to the other roles. So, how do you accomplish this in Streamlit? This is sometimes called Role-based Access Control, or **RBAC** for short.
 
 The code in this project demonstrates how to implement a simple RBAC system in Streamlit but without actually using user authentication (usernames and passwords). The Streamlit pages from the original template repo are split up among 3 roles - Political Strategist, USAID Worker, and a System Administrator role (this is used for any sort of system tasks such as re-training ML model, etc.). It also demonstrates how to deploy an ML model.
 
@@ -100,7 +116,7 @@ Wrapping your head around this will take a little time and exploration of this c
 1. The pages are organized by Role. Pages that start with a `0` are related to the _Political Strategist_ role. Pages that start with a `1` are related to the _USAID worker_ role. And, pages that start with a `2` are related to The _System Administrator_ role.
 
 
-## Incorporating ML Models into your Project (Optional for CS 3200)
+## (Completely Optional) Incorporating ML Models into your Project
 
 _Note_: This project only contains the infrastructure for a hypothetical ML model.
 
