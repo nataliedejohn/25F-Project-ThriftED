@@ -8,14 +8,12 @@ from flask import (
 
 products_bp = Blueprint("products_bp", __name__)
 
-# /product-buyer  GET
 @products_bp.route("/product-buyer", methods=["GET"])
 def get_products_buyer():
     current_app.logger.info("GET /product-buyer")
     data = {"products": ["item1", "item2"], "filter": "buyer view"}
     return make_response(jsonify(data), 200)
 
-# /product-seller  GET, POST
 @products_bp.route("/product-seller", methods=["GET"])
 def get_products_seller():
     current_app.logger.info("GET /product-seller")
@@ -27,7 +25,6 @@ def create_product_listing():
     data = request.get_json()
     return make_response(jsonify({"message": "product created", "data": data}), 201)
 
-# /product-seller/<id>   PUT, DELETE
 @products_bp.route("/product-seller/<int:pid>", methods=["PUT"])
 def update_product(pid):
     current_app.logger.info(f"PUT /product-seller/{pid}")
@@ -44,6 +41,3 @@ def delete_product(pid):
 def get_product_detail(pid):
     current_app.logger.info(f"GET /product-buyer/{pid}")
     return make_response(jsonify({"product_id": pid}), 200)
-
-if __name__ == "__main__":
-  app.run(debug=True)
