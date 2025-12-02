@@ -59,7 +59,7 @@ if st.button("Act as Chloe Kim, the Buyer",
     logger.info("Logging in as a Buyer")
 
     # TODO: Fix the pages later
-    st.switch_page('pages/00_Pol_Strat_Home.py')
+    st.switch_page('pages/00_Buyer_Home.py')
 
 if st.button('Act as Eileen Gu, the Seller', 
             type = 'primary', 
@@ -67,7 +67,7 @@ if st.button('Act as Eileen Gu, the Seller',
     st.session_state['authenticated'] = True
     st.session_state['role'] = 'seller'
     st.session_state['first_name'] = 'Eileen'
-    st.switch_page('pages/10_USAID_Worker_Home.py')
+    st.switch_page('pages/10_Seller_Home.py')
 
 if st.button('Act as Mikaela Shiffrin, the System Administrator', 
             type = 'primary', 
@@ -83,7 +83,7 @@ if st.button('Act as Lindsey Vonn, the Data Analyst',
     st.session_state['authenticated'] = True
     st.session_state['role'] = 'data_analyst'
     st.session_state['first_name'] = 'Lindsey'
-    st.switch_page('pages/20_Admin_Home.py')
+    st.switch_page('pages/30_Analyst_Home.py')
 
 
 
