@@ -8,13 +8,6 @@ from backend.db_connection import db
 from backend.simple.simple_routes import simple_routes
 from backend.ngos.ngo_routes import ngos
 
-app = Flask(__name__)
-@app.route('/product')
-def show_product():
-    # Show existing products
-    return "Here are the existing products"
-
-
 def create_app():
     app = Flask(__name__)
 
