@@ -1,3 +1,4 @@
+DROP DATABASE IF EXISTS ThriftED;
 CREATE DATABASE ThriftED;
 USE ThriftED;
 
@@ -10,6 +11,16 @@ CREATE TABLE IF NOT EXISTS Moderator (
     Birthdate     DATE,
     Age           INT,
     PRIMARY KEY (ModeratorID)
+);
+
+CREATE TABLE IF NOT EXISTS Analyst (
+    AnalystID   INT UNSIGNED AUTO_INCREMENT,
+    FirstName   VARCHAR(50) NOT NULL,
+    LastName    VARCHAR(50) NOT NULL,
+    Email       VARCHAR(255) NOT NULL UNIQUE,
+    Birthdate   DATE,
+    Age         INT,
+    PRIMARY KEY (AnalystID)
 );
 
 CREATE TABLE IF NOT EXISTS Buyer (
@@ -51,16 +62,6 @@ CREATE TABLE IF NOT EXISTS Seller (
         FOREIGN KEY (ModeratorID) REFERENCES Moderator(ModeratorID),
     CONSTRAINT fk_analyst2
         FOREIGN KEY (AnalystID) REFERENCES Analyst(AnalystID)
-);
-
-CREATE TABLE IF NOT EXISTS Analyst (
-    AnalystID   INT UNSIGNED AUTO_INCREMENT,
-    FirstName   VARCHAR(50) NOT NULL,
-    LastName    VARCHAR(50) NOT NULL,
-    Email       VARCHAR(255) NOT NULL UNIQUE,
-    Birthdate   DATE,
-    Age         INT,
-    PRIMARY KEY (AnalystID)
 );
 
 CREATE TABLE IF NOT EXISTS PaymentMethod (
