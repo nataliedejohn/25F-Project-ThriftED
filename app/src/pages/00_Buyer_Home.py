@@ -24,3 +24,8 @@ if st.button('View Order History',
              type='primary',
              use_container_width=True):
   st.switch_page('pages/02_Map_Demo.py')
+
+if st.button('View Messages', 
+             type='primary',
+             use_container_width=True):
+  st.switch_page('pages/03_Messages.py')
