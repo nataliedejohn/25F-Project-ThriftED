@@ -18,12 +18,12 @@ if st.button('View Products',
              type='primary',
              use_container_width=True, 
              icon="🚨"):
-  st.switch_page('pages/01_World_Bank_Viz.py')
+  st.switch_page('pages/01_Shop_Products.py')
 
 if st.button('View Order History', 
              type='primary',
              use_container_width=True):
-  st.switch_page('pages/02_Map_Demo.py')
+  st.switch_page('pages/02_View_Orders.py')
 
 if st.button('View Messages', 
              type='primary',
