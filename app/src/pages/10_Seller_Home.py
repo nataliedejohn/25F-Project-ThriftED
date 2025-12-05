@@ -4,28 +4,35 @@ logger = logging.getLogger(__name__)
 import streamlit as st
 from modules.nav import SideBarLinks
 
-st.set_page_config(layout = 'wide')
+st.set_page_config(layout='wide')
 
-# Show appropriate sidebar links for the role of the currently logged in user
+# Sidebar for Seller Role
 SideBarLinks()
 
-st.title(f"Welcome Seller, {st.session_state['first_name']}.")
-st.write('')
-st.write('')
-st.write('### What would you like to do today?')
+# -------------------------------
+# Header
+# -------------------------------
+st.title(f"Welcome Seller, {st.session_state['first_name']}!")
+st.write("")
+st.write("### What would you like to do today?")
 
-if st.button('View Listings', 
-             type='primary',
-             use_container_width=True):
-  st.switch_page('pages/11_View_Listings.py')
 
-if st.button('New Listing', 
-             type='primary',
-             use_container_width=True):
-  st.switch_page('pages/12_Add_Listing.py')
+# -------------------------------
+# Seller Actions
+# -------------------------------
+st.write("")
 
-if st.button('View Messages', 
-             type='primary',
-             use_container_width=True):
-  st.switch_page('pages/03_Messages.py')
-  
+# View Listings
+if st.button("📦 View My Listings", type="primary", use_container_width=True):
+    # According to API Matrix → GET /listings (seller-specific handled in backend)
+    st.switch_page("pages/11_View_Listings.py")
+
+# Create Listing
+if st.button("➕ Add New Listing", type="primary", use_container_width=True):
+    # According to API Matrix → POST /listings (done in the Add Listing page)
+    st.switch_page("pages/12_Add_Listing.py")
+
+# View Messages
+if st.button("💬 View Messages", type="primary", use_container_width=True):
+    # According to API Matrix → GET /messages and GET /messages/{chat-id}
+    st.switch_page("pages/03_Messages.py")

@@ -1,42 +1,51 @@
 import logging
 logger = logging.getLogger(__name__)
+
 import pandas as pd
 import streamlit as st
 from streamlit_extras.app_logo import add_logo
 from modules.nav import SideBarLinks
 import requests
 
-# Call the SideBarLinks from the nav module in the modules directory
+# Sidebar
 SideBarLinks()
 
-# set the header of the page
-st.header('View Orders')
+# Header
+st.header("View Orders")
+st.write(f"### Hi, {st.session_state.get('first_name', 'User')}!")
 
-# You can access the session state to make a more customized/personalized app experience
-st.write(f"### Hi, {st.session_state['first_name']}.")
+# Correct API endpoint (from REST API matrix)
+API_URL = "http://web-api:4000/orders"
 
-# connect to orders blueprints
-
-# API endpoint
-API_URL = "http://web-api:4000/buyer-routes/orders"
-
-# Get unique values for filters from the API
+# Fetch Orders
 try:
     response = requests.get(API_URL)
+
     if response.status_code == 200:
         orders = response.json()
-        
-        st.write(f"Found {len(orders)} Orders")
+
+        if isinstance(orders, dict):
+            # In case backend wraps response ({"data": [...]})
+            orders = orders.get("data", [])
+
+        st.write(f"Found **{len(orders)}** orders.")
+
         for order in orders:
-            with st.expander(f"{order['BuyerID']}"):
-                st.write(f"**BuyerID:** {order['BuyerID']}")
-                st.write(f"**OrderDate:** {order['OrderDate']}")
+            order_id = order.get("OrderID", "Unknown Order")
+            buyer_id = order.get("BuyerID", "N/A")
+
+            with st.expander(f"Order {order_id} — Buyer {buyer_id}"):
+                st.write(f"**Order ID:** {order_id}")
+                st.write(f"**Buyer ID:** {buyer_id}")
+                st.write(f"**Product ID:** {order.get('ProductID', 'N/A')}")
+                st.write(f"**Order Date:** {order.get('OrderDate', 'N/A')}")
+                st.write(f"**Pickup Spot:** {order.get('PickupSpot', 'N/A')}")
+                st.write(f"**Status:** {order.get('Status', 'N/A')}")
 
     else:
-        st.write("Status:", response.status_code)
-        st.write("Response:", response.text)
-        st.error("Failed to fetch Product data from the API")
+        st.error(f"Failed to fetch order data (Status {response.status_code})")
+        st.write(response.text)
 
 except requests.exceptions.RequestException as e:
     st.error(f"Error connecting to the API: {str(e)}")
-    st.info("Please ensure the API server is running on http://web-api:4000")
+    st.info("Make sure the API server is running at http://web-api:4000")

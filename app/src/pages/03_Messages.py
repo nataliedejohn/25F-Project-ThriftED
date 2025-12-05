@@ -1,87 +1,164 @@
-""" Message page for both buyers and sellers to communicate with each other"""
+"""
+Unified Messages Page for Buyers and Sellers
+Automatically switches UI based on user role
+"""
 
 import logging
 logger = logging.getLogger(__name__)
-import pandas as pd
+
 import streamlit as st
-from streamlit_extras.app_logo import add_logo
+import requests
 from modules.nav import SideBarLinks
 
-# Call the SideBarLinks from the nav module in the modules directory
 SideBarLinks()
 
-# set the header of the page
-st.header('Messages Home Page')
+# ----------------------------
+# Role + User Info
+# ----------------------------
+role = st.session_state.get("role")          # "buyer" or "seller"
+user_id = st.session_state.get("user_id")
+first_name = st.session_state.get("first_name")
 
-# You can access the session state to make a more customized/personalized app experience
-st.write(f"### Hi, {st.session_state['first_name']}")
+st.header("📨 Messages")
+st.write(f"### Hi, {first_name}!")
 
-# see all message conversations? how to implement this - 
-# start new message button? pop up an add message box - to senderID and message body - follow Add_NGO page
-message_column, new_message_column = st.columns([0.6, 0.4])
+# ----------------------------
+# API Endpoints
+# ----------------------------
+BASE_URL = "http://web-api:4000"
+MESSAGES_URL = f"{BASE_URL}/messages"
 
-# is there a way to differentiate between sent and recieved? If not just show all messages
-with message_column:
-    st.write("### Sent")
-    # get sent messages from api
-    st.write("### Received")
-    # get received messages from api
 
-# start a new message form - add to api 
-with new_message_column:
-    
-    # Initialize session state for new listing
-    if "show_success_modal" not in st.session_state:
-        st.session_state.show_success_modal = False
-    if "success_message_" not in st.session_state:
-        st.session_state.success_convoID = ""
-    if "reset_form" not in st.session_state:
-        st.session_state.reset_form = False
-    if "listing_counter" not in st.session_state:
-        st.session_state.message_counter = 0
+# ----------------------------
+# Retrieve User Threads
+# ----------------------------
+def load_message_threads():
+    try:
+        response = requests.get(MESSAGES_URL, params={"user_id": user_id, "role": role})
+        if response.status_code == 200:
+            return response.json()
+        else:
+            st.error(f"Failed to fetch messages. Status: {response.status_code}")
+            return []
+    except Exception as e:
+        st.error(f"Error connecting to API: {str(e)}")
+        return []
 
-    # define success dialog function
-    @st.dialog("Message Sent")
-    def show_success_dialog(convoID):
-        st.markdown(f"### Message has been successfully sent!")
-        
-        if st.button("Return to Messages Home", use_container_width=True):
-            st.session_state.show_success_modal = False
-            st.session_state.success_convoID = ""
-            st.session_state.reset_form = True
+
+threads = load_message_threads()
+
+# =========================================
+# 🧵 VIEW MESSAGE THREAD LIST
+# =========================================
+
+st.subheader("Your Conversations")
+
+if len(threads) == 0:
+    st.info("You have no messages yet.")
+else:
+    for t in threads:
+        other_party = t["buyer_name"] if role == "seller" else t["seller_name"]
+        preview = t["last_message"][:40] + "..."
+        chat_id = t["chat_id"]
+
+        if st.button(f"💬 Chat with {other_party}\n*{preview}*", key=f"thread_{chat_id}", use_container_width=True):
+            st.session_state["open_chat_id"] = chat_id
             st.rerun()
 
-    # Handle form reset
-    if st.session_state.reset_form:
-        st.session_state.message_counter += 1
-        st.session_state.reset_form = False
 
-    # TODO : API endpoint for adding messages to database
+# ==================================================
+# 🗨️ OPEN A CONVERSATION (IF SELECTED)
+# ==================================================
+if "open_chat_id" in st.session_state:
 
-    with st.form(f"create_message_{st.session_state.message_counter}"):
-        st.subheader("Start New Message")
+    chat_id = st.session_state["open_chat_id"]
 
-        # Required message details
-        recipient = st.radio("Select Recipient *", options=["Buyer", "Seller"])
-        recipient_id = st.text_input("Recipient ID *")
-        body = st.text_area("Message Body *")
-
-        submitted = st.form_submit_button("Send Message")
-
-        if submitted:
-            # Validate required fields
-            if not all ([recipient, recipient_id, body]):
-                st.error("Please fill in all required fields marked with *")
+    # Retrieve messages for selected conversation
+    def load_single_thread(chat_id):
+        try:
+            url = f"{MESSAGES_URL}/{chat_id}"
+            response = requests.get(url)
+            if response.status_code == 200:
+                return response.json()
             else:
-                message_data = {
-                    "recipient" : recipient,
-                    "recipient_id" : recipient_id,
-                    "body" : body
+                st.error("Unable to load conversation.")
+                return []
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+            return []
+
+    messages = load_single_thread(chat_id)
+
+    st.divider()
+    st.subheader("📩 Conversation")
+
+    # Display messages
+    for msg in messages:
+        is_user = msg["sender_id"] == user_id
+
+        st.chat_message("user" if is_user else "assistant").write(msg["body"])
+
+    st.write("")
+
+    # Send new message
+    new_message = st.text_area("Write a message...", key="message_input")
+
+    if st.button("Send Message ➤", use_container_width=True):
+        if new_message.strip() == "":
+            st.warning("Message cannot be empty.")
+        else:
+            try:
+                url = f"{MESSAGES_URL}/{chat_id}"
+                payload = {"sender_id": user_id, "body": new_message}
+
+                response = requests.post(url, json=payload)
+
+                if response.status_code == 201:
+                    st.success("Message sent!")
+                    st.session_state["message_input"] = ""  # clear input
+                    st.rerun()
+                else:
+                    st.error("Failed to send message.")
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
+
+
+# ==================================================
+# 🆕 START NEW MESSAGE (ROLE-AWARE)
+# ==================================================
+st.divider()
+
+st.subheader("🆕 Start New Conversation")
+
+with st.form("new_message_form"):
+    st.write("Select the recipient and write your message:")
+
+    if role == "buyer":
+        recipient_id = st.text_input("Seller ID *")
+    else:
+        recipient_id = st.text_input("Buyer ID *")
+
+    message_body = st.text_area("Message Body *")
+
+    submitted = st.form_submit_button("Start Conversation")
+
+    if submitted:
+        if not recipient_id or not message_body:
+            st.error("All fields are required.")
+        else:
+            try:
+                payload = {
+                    "sender_id": user_id,
+                    "recipient_id": recipient_id,
+                    "role": role,
+                    "body": message_body
                 }
+                response = requests.post(MESSAGES_URL, json=payload)
 
-                st.session_state.show_success_modal = True
-                st.session_state.success_convoID = "convoID"
-                show_success_dialog(st.session_state.success_convoID)
-
-    if st.session_state.show_success_modal:
-        show_success_dialog(st.session_state.success_convoID)
+                if response.status_code == 201:
+                    st.success("Conversation started!")
+                    st.rerun()
+                else:
+                    st.error("Failed to start conversation.")
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
