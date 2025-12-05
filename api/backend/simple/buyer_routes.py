@@ -6,6 +6,8 @@ from flask import (
     current_app,
 )
 import json
+from backend.db_connection import db
+from mysql.connector import Error
 
 buyer_bp = Blueprint("buyer_bp", __name__)
 
@@ -21,7 +23,7 @@ def get_products_buyer():
 def create_orders():
     current_app.logger.info("POST /orders")
     order_data = request.get_json()
-    data = {"message": "Order successfully placed", "order_data": order_data]}
+    data = {"message": "Order successfully placed", "order_data": order_data}
     response = make_response(jsonify(data))
     response.status_code = 201
     return response
@@ -49,3 +51,24 @@ def get_buyer_profile():
     response = make_response(jsonify(buyer_profile))
     response.status_code = 200
     return response
+
+@buyer_bp.route("/orders", methods=["GET"])
+def get_all_orders():
+    try:
+        current_app.logger.info('Starting get_all_orders request')
+        cursor = db.get_db().cursor()
+
+        query = "SELECT * FROM Orders"
+
+        cursor.execute(query)
+        orders = cursor.fetchall()
+        cursor.close()
+
+        current_app.logger.info(f'Successfully retrieved {len(orders)} Orders')
+        the_response = make_response(orders)
+        the_response.status_code = 200
+        the_response.mimetype = "application/json"
+        return the_response
+    except Error as e:
+        current_app.logger.error(f'Database error in get_all_orders: {str(e)}')
+        return jsonify({"error": str(e)}), 500
