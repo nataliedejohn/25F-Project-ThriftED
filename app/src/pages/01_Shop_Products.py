@@ -45,13 +45,6 @@ with filter_column:
         default=st.session_state.get("category")
     )
 
-    # Price Range
-    st.session_state.price = st.slider(
-        "Price Range",
-        0, 500,
-        value=st.session_state.price
-    )
-
     # Tags (placeholder list until API is connected)
     st.session_state.tags = st.multiselect(
         "Tags",

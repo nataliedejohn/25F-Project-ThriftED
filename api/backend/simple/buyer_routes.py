@@ -47,7 +47,13 @@ def get_product_detail(pid):
         cursor = db.get_db().cursor()
 
         # Get NGO details
-        cursor.execute("SELECT * FROM Product WHERE ProductID = %s", (pid,))
+        query = """
+            SELECT p.*, pp.PhotoURL
+            FROM Product p
+            LEFT JOIN ProductPhoto pp ON p.ProductID = pp.ProductID
+            WHERE p.ProductID = %s
+        """
+        cursor.execute(query, (pid,))
         prod = cursor.fetchone()
 
         if not prod:
