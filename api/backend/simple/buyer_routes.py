@@ -30,11 +30,26 @@ def create_orders():
 
 @buyer_bp.route("/product-buyer/<int:pid>", methods=["GET"])
 def get_product_detail(pid):
-    current_app.logger.info(f"GET /product-buyer/{pid}")
-    product_data = {"product_id": pid, "name": "Example Product", "price": 50.0}
-    response = make_response(jsonify(product_data))
-    response.status_code = 200
-    return response
+    try:
+        cursor = db.get_db().cursor()
+
+        # Get NGO details
+        query = """
+            SELECT p.*, pp.PhotoURL
+            FROM Product p
+            LEFT JOIN ProductPhoto pp ON p.ProductID = pp.ProductID
+            WHERE p.ProductID = %s
+        """
+        cursor.execute(query, (pid,))
+        prod = cursor.fetchone()
+
+        if not prod:
+            return jsonify({"error": "Product not found"}), 404
+
+        cursor.close()
+        return jsonify(prod), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
     
 @buyer_bp.route("/orders/<int:order_id>/cancel", methods=["PUT"])
 def cancel_order(order_id):

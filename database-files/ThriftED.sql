@@ -234,7 +234,7 @@ VALUES (1, 'Nike Court Tennis Racket', 'Lightweight racket used in training.', '
 (2, 'USA Soccer Warmup Jacket', 'Official team jacket worn during practice.', 'Clothing', 'Like New', 'Available', 85.00, '2025-10-25', 112, 24, TRUE);
 
 INSERT INTO ProductPhoto (ProductID, PhotoURL) 
-VALUES (1, 'https://example.com/photos/racket1.jpg'),
+VALUES (1, 'https://p.turbosquid.com/ts-thumb/G7/irQMS5/YF/1/png/1737886427/1920x1080/fit_q87/d925f87660d75a1885f3954ae5dbdd24d2c15e84/1.jpg'),
 (2, 'https://example.com/photos/jacket1.jpg');
 
 INSERT INTO ProductTag (Title) 

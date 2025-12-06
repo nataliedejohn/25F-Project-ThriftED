@@ -41,6 +41,12 @@ else:
             st.write(f"**Views:** {product['Views']}")
             st.write(f"**Saves:** {product['Saves']}")
             st.write(f"**Seller Verified:** {'Yes' if product['Verified'] == 1 else 'No'}")
+            photo_url = product.get("PhotoURL", "")
+            if photo_url:
+                try:
+                    st.image(photo_url, caption="Product Photo", use_column_width=True)
+                except Exception as e:
+                    st.info("📷 Product photo not available")
 
         elif response.status_code == 404:
             st.error("Product not found")
