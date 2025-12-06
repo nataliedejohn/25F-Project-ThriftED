@@ -51,5 +51,51 @@ def put_seller_product(pid):
     response.status_code = 200
     return response
 
+# Create a new product listing
+@seller_bp.route("/listings", methods=["POST"])
+def create_listing():
+    try:
+        data = request.get_json()
 
+        # validate required fields
+        required_fields = ["Name", "Description", "Category", "Condition", "Price"]
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+        
+        cursor = db.get_db().cursor()
+
+        # Insert new listing into database
+        query = """INSERT INTO Product (SellerID, Name, Description, Category, `Condition`, Price) VALUES (%s, %s, %s, %s, %s, %s)"""
+        params = (
+            data["SellerID"],
+            data["Name"],
+            data["Description"],
+            data["Category"],
+            data["Condition"],
+            data["Price"],
+        )
+
+        cursor.execute(query, params)
+        product_id = cursor.lastrowid
+
+        # Insert tags into database
+        for tag in data["Tags"]:
+            tag_query = """ INSERT INTO ProductTag (Title)
+                            VALUES (%s) """
+            cursor.execute(tag_query, (tag,))
+            tag_id = cursor.lastrowid
+            product_tag_query = """ INSERT INTO TagsOfProduct (ProductID, ProductTagID)
+                                    VALUES (%s, %s)"""
+            cursor.execute(product_tag_query, (product_id, tag_id))
+
+        db.get_db().commit()
+        cursor.close()
+
+        return jsonify({"message": "Product Successfully Listed"}), 201
+
+        
+
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
 
