@@ -12,7 +12,7 @@ data_analyst_bp = Blueprint("data_analyst_bp", __name__)
 # GET popular products by views, category, revenue
 @data_analyst_bp.route("/Engagement_Analytics", methods=["GET"])
 def get_popular_products():
-    current_app.logger.info("GET /analytics/popular-products")
+    current_app.logger.info("GET /Engagement_Analytics")
   
     data = {
         "products": [
