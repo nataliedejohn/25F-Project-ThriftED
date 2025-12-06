@@ -94,4 +94,6 @@ def get_category_stats():
             {"name": "Clothing", "product_count": 33},
         ]
     }
-    response = make_response(js_
+    response = make_response(jsnoify(data))
+    response.status_code = 200
+    return response
