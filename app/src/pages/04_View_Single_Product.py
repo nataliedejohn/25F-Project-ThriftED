@@ -3,32 +3,60 @@ logger = logging.getLogger(__name__)
 import pandas as pd
 import streamlit as st
 from streamlit_extras.app_logo import add_logo
+import requests
 
 from modules.nav import SideBarLinks
 
 # Call the SideBarLinks from the nav module in the modules directory
 SideBarLinks()
 
-# set the header of the page
-st.header(f"{st.session_state['first_name']} Details")
-
-# You can access the session state to make a more customized/personalized app experience
-st.write(f"### product details for single product, clicked on from shop products")
-st.write(f"### **Item Name**")
-st.write(f"# **Price**")
-st.write(f"Category | Posted date")
-st.write(f"**Images**")
-
-description_column, seller_column = st.columns([0.7, 0.3])
-with description_column:
-    st.write(f"Tags")   
-    st.write(f"Description")
-
-with seller_column:
-    st.write(f"**Seller Informatoin**")
-    if st.button("Start Message"):
-        st.switch_page("pages/03_Messages.py")
-    if st.button("Add to Order"):
-        st.write("Added to order... write to API/order page")
-
 # get product details
+
+# Get product ID from session state
+pid = st.session_state.get("selected_product")
+
+if pid is None:
+    st.error("No Product selected")
+else:
+    # API endpoint
+    API_URL = f"http://web-api:4000/buyer-routes/product-buyer/{pid}"
+
+    try:
+        # Fetch product details
+        response = requests.get(API_URL)
+
+        if response.status_code == 200:
+            product = response.json()
+
+            # Display basic information
+            st.header(product["Name"])
+
+            st.subheader("Basic Information")
+            st.write(f"**Description:** {product['Description']}")
+            st.write(f"**Category:** {product['Category']}")
+            st.write(f"**Condition:** {product['Condition']}")
+            st.write(f"**Status:** {product['Status']}")
+            st.write(f"**Price:** ${product['Price']}")
+            st.write(f"**Posted Date:** {product['PostedDate']}")
+            st.write(f"**Views:** {product['Views']}")
+            st.write(f"**Saves:** {product['Saves']}")
+            st.write(f"**Seller Verified:** {'Yes' if product['Verified'] == 1 else 'No'}")
+
+        elif response.status_code == 404:
+            st.error("Product not found")
+        else:
+            st.error(
+                f"Error fetching NGO data: {response.json().get('error', 'Unknown error')}"
+            )
+
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error connecting to the API: {str(e)}")
+        st.info("Please ensure the API server is running")
+
+# Add a button to return to the NGO Directory
+if st.button("Return to Shop Products"):
+    # Clear the selected NGO ID from session state
+    if "selected_pid" in st.session_state:
+        del st.session_state["selected_pid"]
+    st.switch_page("pages/01_Shop_Products.py")
+

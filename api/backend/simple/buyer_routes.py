@@ -13,11 +13,24 @@ buyer_bp = Blueprint("buyer_bp", __name__)
 
 @buyer_bp.route("/product-buyer", methods=["GET"])
 def get_products_buyer():
-    current_app.logger.info("GET /product-buyer")
-    data = {"products": ["item1", "item2"], "filter": "buyer view"}
-    response = make_response(jsonify(data))
-    response.status_code = 200
-    return response
+    try:
+        current_app.logger.info('Starting get_products_buyer request')
+        cursor = db.get_db().cursor()
+
+        query = "SELECT * FROM Product"
+
+        cursor.execute(query)
+        products = cursor.fetchall()
+        cursor.close()
+
+        current_app.logger.info(f'Successfully retrieved {len(products)} Products')
+        the_response = make_response(products)
+        the_response.status_code = 200
+        the_response.mimetype = "application/json"
+        return the_response
+    except Error as e:
+        current_app.logger.error(f'Database error in get_all_orders: {str(e)}')
+        return jsonify({"error": str(e)}), 500
 
 @buyer_bp.route("/orders", methods=["POST"])
 def create_orders():
@@ -30,11 +43,20 @@ def create_orders():
 
 @buyer_bp.route("/product-buyer/<int:pid>", methods=["GET"])
 def get_product_detail(pid):
-    current_app.logger.info(f"GET /product-buyer/{pid}")
-    product_data = {"product_id": pid, "name": "Example Product", "price": 50.0}
-    response = make_response(jsonify(product_data))
-    response.status_code = 200
-    return response
+    try:
+        cursor = db.get_db().cursor()
+
+        # Get NGO details
+        cursor.execute("SELECT * FROM Product WHERE ProductID = %s", (pid,))
+        prod = cursor.fetchone()
+
+        if not prod:
+            return jsonify({"error": "Product not found"}), 404
+
+        cursor.close()
+        return jsonify(prod), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
     
 @buyer_bp.route("/orders/<int:order_id>/cancel", methods=["PUT"])
 def cancel_order(order_id):
