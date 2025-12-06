@@ -10,7 +10,7 @@ import json
 data_analyst_bp = Blueprint("data_analyst_bp", __name__)
 
 # GET popular products by views, category, revenue
-@data_analyst_bp.route("/analytics/popular-products", methods=["GET"])
+@data_analyst_bp.route("/Engagement_Analytics", methods=["GET"])
 def get_popular_products():
     current_app.logger.info("GET /analytics/popular-products")
   
@@ -97,3 +97,27 @@ def get_category_stats():
     response = make_response(jsnoify(data))
     response.status_code = 200
     return response
+
+@data_analyst_bp.route("/categories", methods=["GET"])
+def get_category_stats():
+    try:
+        current_app.logger.info("Starting get_category_stats request")
+        cursor = db.get_db().cursor(dictionary=True)
+
+        query = "SELECT Category AS name, COUNT(*) AS product_count
+            FROM Product
+            GROUP BY Category;"
+        cursor.execute(query)
+        categories = cursor.fetchall()
+        cursor.close()
+
+        current_app.logger.info(f"Successfully retrieved {len(categories)} categories with counts")
+
+        data = {"categories": categories}
+        response = make_response(jsonify(data))
+        response.status_code = 200
+        return response
+
+    except Error as e:
+        current_app.logger.error(f"Database error in get_category_stats: {str(e)}")
+        return jsonify({"error": str(e)}), 500
