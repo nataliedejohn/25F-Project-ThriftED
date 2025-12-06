@@ -13,11 +13,24 @@ buyer_bp = Blueprint("buyer_bp", __name__)
 
 @buyer_bp.route("/product-buyer", methods=["GET"])
 def get_products_buyer():
-    current_app.logger.info("GET /product-buyer")
-    data = {"products": ["item1", "item2"], "filter": "buyer view"}
-    response = make_response(jsonify(data))
-    response.status_code = 200
-    return response
+    try:
+        current_app.logger.info('Starting get_products_buyer request')
+        cursor = db.get_db().cursor()
+
+        query = "SELECT * FROM Product"
+
+        cursor.execute(query)
+        products = cursor.fetchall()
+        cursor.close()
+
+        current_app.logger.info(f'Successfully retrieved {len(products)} Products')
+        the_response = make_response(products)
+        the_response.status_code = 200
+        the_response.mimetype = "application/json"
+        return the_response
+    except Error as e:
+        current_app.logger.error(f'Database error in get_all_orders: {str(e)}')
+        return jsonify({"error": str(e)}), 500
 
 @buyer_bp.route("/orders", methods=["POST"])
 def create_orders():
@@ -87,3 +100,25 @@ def get_all_orders():
     except Error as e:
         current_app.logger.error(f'Database error in get_all_orders: {str(e)}')
         return jsonify({"error": str(e)}), 500
+    
+@buyer_bp.route("/messages", methods=["GET"])
+def get_all_messages():
+    try:
+        current_app.logger.info('Starting get_all_orders request')
+        cursor = db.get_db().cursor()
+
+        query = "SELECT * FROM Messages WHERE BuyerID = 1"
+
+        cursor.execute(query)
+        messages = cursor.fetchall()
+        cursor.close()
+
+        current_app.logger.info(f'Successfully retrieved {len(messages)} Orders')
+        the_response = make_response(messages)
+        the_response.status_code = 200
+        the_response.mimetype = "application/json"
+        return the_response
+    except Error as e:
+        current_app.logger.error(f'Database error in get_all_orders: {str(e)}')
+        return jsonify({"error": str(e)}), 500
+

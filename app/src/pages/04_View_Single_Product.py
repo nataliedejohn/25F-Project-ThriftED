@@ -44,7 +44,7 @@ else:
             photo_url = product.get("PhotoURL", "")
             if photo_url:
                 try:
-                    st.image(photo_url, caption="Product Photo", use_column_width=True)
+                    st.image(photo_url, caption="Product Photo", use_container_width=True)
                 except Exception as e:
                     st.info("📷 Product photo not available")
 

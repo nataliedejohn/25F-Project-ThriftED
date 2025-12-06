@@ -84,7 +84,7 @@ with product_column:
     }
 
     # API endpoint (from REST API matrix: GET /product-buyer)
-    API_URL = "http://web-api:4000/product-buyer"
+    API_URL = "http://web-api:4000/buyer-routes/product-buyer"
 
     # Fetch products
     try:
@@ -98,11 +98,11 @@ with product_column:
             # Display each product
             for product in products:
                 with st.container(border=True):
-                    st.markdown(f"### {product.get('ProductName', 'Unnamed Product')}")
-                    st.write(f"**Price:** ₱{product.get('Price', 'N/A')}")
+                    st.markdown(f"### {product['Name']}")
+                    st.write(f"**Price:** ${product.get('Price', 'N/A')}")
                     st.write(f"**Category:** {product.get('Category', 'N/A')}")
                     st.write(f"**Condition:** {product.get('Condition', 'N/A')}")
-                    st.write(f"**Seller Verified:** {product.get('Verified', False)}")
+                    st.write(f"**Seller Verified:** {'Yes' if product['Verified'] == 1 else 'No'}")
 
                     # Button to view a specific product
                     if st.button("View Details", key=f"btn-{product.get('ProductID')}"):
