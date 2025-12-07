@@ -45,11 +45,24 @@ def get_seller_info(pid):
 # Update product listing for a specific product
 @seller_bp.route("/product-seller/<int:pid>", methods=["PUT"])
 def put_seller_product(pid):
-    current_app.logger.info(f"PUT /product-seller/{pid}")
-    data = {"product_status": "available", "category": "electronics"}
-    response = make_response(jsonify(data))
-    response.status_code = 200
-    return response
+    try:
+        data = request.get_json()
+
+        # Check if product exists
+        cursor = db.get_db().cursor()
+        cursor.execute("SELECT * FROM Product WHERE ProductID = %s", (pid,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Product not found"}), 404
+        
+        # Update query
+        query = f"UPDATE Product SET Status WHERE ProductID = %s"
+        cursor.execute(query, (pid,))
+        db.get_db().commit()
+        cursor.close()
+        
+        return jsonify({"message", "Product updated successfully"}), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
 
 # Create a new product listing
 @seller_bp.route("/listings", methods=["POST"])
@@ -94,8 +107,37 @@ def create_listing():
 
         return jsonify({"message": "Product Successfully Listed"}), 201
 
-        
-
     except Error as e:
         return jsonify({"error": str(e)}), 500
 
+# Create a new message 
+@seller_bp.route("/create-messages", methods=["POST"])
+def create_message():
+    try:
+        data = request.get_json()
+
+        # validate required fields
+        required_fields = ["BuyerID", "Body"]
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+        
+        cursor = db.get_db().cursor()
+
+        # Insert new listing into database
+        query = """INSERT INTO Messages (SellerID, BuyerID, Body) VALUES (%s, %s, %s)"""
+        params = (
+            1,
+            data["BuyerID"],
+            data["Body"],
+        )
+
+        cursor.execute(query, params)
+        db.get_db().commit()
+        cursor.close()
+
+        return jsonify({"message": "Product Successfully Listed"}), 201
+
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    

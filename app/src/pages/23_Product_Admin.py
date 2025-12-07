@@ -24,10 +24,11 @@ try:
                 st.write(f"**Description:** {product['Description']}")
                 st.write(f"**Price:** ${product['Price']}")
 
-                # Button to view a specific product
-                if st.button("Delete Product Listing", key=f"btn-{product.get('ProductID')}"):
-                    st.session_state.selected_pid = product.get("ProductID")
-                    st.switch_page("pages/24_Delete_Product.py")
+                #Edit listing button
+                if st.button("✏️ Edit Product", key=f"edit_{product['ProductID']}"):
+                    st.session_state["edit_listing_id"] = product["ProductID"]
+                    st.session_state.selected_product = product.get("ProductID")
+                    st.switch_page("pages/21_View_Product.py")
 
     else:
         st.write("Status:", response.status_code)

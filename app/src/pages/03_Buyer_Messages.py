@@ -1,6 +1,5 @@
 """
-Unified Messages Page for Buyers and Sellers
-Automatically switches UI based on user role
+Messages Page for Buyers
 """
 
 import logging
@@ -15,7 +14,7 @@ SideBarLinks()
 # ----------------------------
 # Role + User Info
 # ----------------------------
-role = st.session_state.get("role")          # "buyer" or "seller"
+role = st.session_state.get("role")
 user_id = st.session_state.get("user_id")
 first_name = st.session_state.get("first_name")
 
@@ -25,7 +24,7 @@ st.write(f"### Hi, {first_name}!")
 # ----------------------------
 # API Endpoints
 # ----------------------------
-BASE_URL = "http://web-api:4000"
+BASE_URL = "http://web-api:4000/buyer-routes"
 MESSAGES_URL = f"{BASE_URL}/messages"
 
 
@@ -53,17 +52,17 @@ threads = load_message_threads()
 
 st.subheader("Your Conversations")
 
-if len(threads) == 0:
-    st.info("You have no messages yet.")
-else:
-    for t in threads:
-        other_party = t["buyer_name"] if role == "seller" else t["seller_name"]
-        preview = t["last_message"][:40] + "..."
-        chat_id = t["chat_id"]
+# if len(threads) == 0:
+#     st.info("You have no messages yet.")
+# else:
+#     for t in threads:
+#         other_party = t["buyer_name"] if role == "seller" else t["seller_name"]
+#         preview = t["last_message"][:40] + "..."
+#         chat_id = t["chat_id"]
 
-        if st.button(f"💬 Chat with {other_party}\n*{preview}*", key=f"thread_{chat_id}", use_container_width=True):
-            st.session_state["open_chat_id"] = chat_id
-            st.rerun()
+#         if st.button(f"💬 Chat with {other_party}\n*{preview}*", key=f"thread_{chat_id}", use_container_width=True):
+#             st.session_state["open_chat_id"] = chat_id
+#             st.rerun()
 
 
 # ==================================================
@@ -130,35 +129,56 @@ st.divider()
 
 st.subheader("🆕 Start New Conversation")
 
+# Session State Setup
+if "show_success_modal" not in st.session_state:
+    st.session_state.show_success_modal = False
+if "reset_form" not in st.session_state:
+    st.session_state.reset_form = False
+
+# Success Dialog
+@st.dialog("Message Started!")
+def show_success_dialog():
+    st.write("Your conversation has been started successfully.")
+    if st.button("Return to Messages"):
+        st.session_state.show_success_modal = False
+        st.rerun()
+
+# Reset form
+if st.session_state.reset_form:
+    st.session_state.reset_form = False
+
+# API endpoind
+API_URL = "http://web-api:4000/buyer-routes/create-messages"
+
 with st.form("new_message_form"):
     st.write("Select the recipient and write your message:")
 
-    if role == "buyer":
-        recipient_id = st.text_input("Seller ID *")
-    else:
-        recipient_id = st.text_input("Buyer ID *")
-
+    # required fields
+    recipient_id = st.text_input("Seller ID *")
     message_body = st.text_area("Message Body *")
 
+    # form submission button
     submitted = st.form_submit_button("Start Conversation")
 
     if submitted:
+        # validate required fields
         if not recipient_id or not message_body:
             st.error("All fields are required.")
         else:
             try:
                 payload = {
-                    "sender_id": user_id,
-                    "recipient_id": recipient_id,
-                    "role": role,
-                    "body": message_body
+                    "SellerID": recipient_id,
+                    "Body": message_body
                 }
-                response = requests.post(MESSAGES_URL, json=payload)
+                response = requests.post(API_URL, json=payload)
 
                 if response.status_code == 201:
-                    st.success("Conversation started!")
+                    st.session_state.show_success_modal = True
+                    show_success_dialog()
                     st.rerun()
                 else:
-                    st.error("Failed to start conversation.")
+                    st.error(f"Failed to start conversation. Status {response.status_code}")
+                    st.write(response.text)
+
             except Exception as e:
                 st.error(f"Error: {str(e)}")

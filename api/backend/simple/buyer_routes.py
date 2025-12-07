@@ -122,3 +122,33 @@ def get_all_messages():
         current_app.logger.error(f'Database error in get_all_orders: {str(e)}')
         return jsonify({"error": str(e)}), 500
 
+# Create a new message 
+@buyer_bp.route("/create-messages", methods=["POST"])
+def create_message():
+    try:
+        data = request.get_json()
+
+        # validate required fields
+        required_fields = ["SellerID", "Body"]
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+        
+        cursor = db.get_db().cursor()
+
+        # Insert new listing into database
+        query = """INSERT INTO Messages (BuyerID, SellerID, Body) VALUES (%s, %s, %s)"""
+        params = (
+            2,
+            data["SellerID"],
+            data["Body"],
+        )
+
+        cursor.execute(query, params)
+        db.get_db().commit()
+        cursor.close()
+
+        return jsonify({"message": "Product Successfully Listed"}), 201
+
+    except Error as e:
+        return jsonify({"error": str(e)}), 500

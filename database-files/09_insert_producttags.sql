@@ -1,0 +1,27 @@
+USE ThriftED;
+
+INSERT INTO ProductTag (Title) VALUES ('Bags');
+INSERT INTO ProductTag (Title) VALUES ('Bags');
+INSERT INTO ProductTag (Title) VALUES ('Jewelry');
+INSERT INTO ProductTag (Title) VALUES ('Furniture');
+INSERT INTO ProductTag (Title) VALUES ('Food');
+INSERT INTO ProductTag (Title) VALUES ('Furniture');
+INSERT INTO ProductTag (Title) VALUES ('Shoes');
+INSERT INTO ProductTag (Title) VALUES ('Garden');
+INSERT INTO ProductTag (Title) VALUES ('Art');
+INSERT INTO ProductTag (Title) VALUES ('Furniture');
+INSERT INTO ProductTag (Title) VALUES ('Toys');
+INSERT INTO ProductTag (Title) VALUES ('Tools');
+INSERT INTO ProductTag (Title) VALUES ('Home Decor');
+INSERT INTO ProductTag (Title) VALUES ('Beauty');
+INSERT INTO ProductTag (Title) VALUES ('Pet Supplies');
+INSERT INTO ProductTag (Title) VALUES ('Pet Supplies');
+INSERT INTO ProductTag (Title) VALUES ('Clothing');
+INSERT INTO ProductTag (Title) VALUES ('Home Decor');
+INSERT INTO ProductTag (Title) VALUES ('Art');
+INSERT INTO ProductTag (Title) VALUES ('Garden');
+INSERT INTO ProductTag (Title) VALUES ('Jewelry');
+INSERT INTO ProductTag (Title) VALUES ('Music');
+INSERT INTO ProductTag (Title) VALUES ('Tools');
+INSERT INTO ProductTag (Title) VALUES ('Clothing');
+INSERT INTO ProductTag (Title) VALUES ('Electronics');
