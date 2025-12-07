@@ -12,9 +12,7 @@ from modules.nav import SideBarLinks
 
 SideBarLinks()
 
-# ----------------------------
 # Role + User Info
-# ----------------------------
 role = st.session_state.get("role")
 user_id = st.session_state.get("user_id")
 first_name = st.session_state.get("first_name")
@@ -22,16 +20,12 @@ first_name = st.session_state.get("first_name")
 st.header("📨 Messages")
 st.write(f"### Hi, {first_name}!")
 
-# ----------------------------
 # API Endpoints
-# ----------------------------
 BASE_URL = "http://web-api:4000/seller-routes"
 MESSAGES_URL = f"{BASE_URL}/messages"
 
 
-# ----------------------------
-# Retrieve User Threads
-# ----------------------------
+# user threads
 def load_message_threads():
     try:
         response = requests.get(MESSAGES_URL, params={"user_id": user_id, "role": role})
@@ -46,10 +40,6 @@ def load_message_threads():
 
 
 threads = load_message_threads()
-
-# =========================================
-# 🧵 VIEW MESSAGE THREAD LIST
-# =========================================
 
 st.subheader("Your Conversations")
 
@@ -66,9 +56,7 @@ else:
             st.rerun()
 
 
-# ==================================================
-# 🗨️ OPEN A CONVERSATION (IF SELECTED)
-# ==================================================
+# OPEN A CONVERSATION (IF SELECTED)
 if "open_chat_id" in st.session_state:
 
     chat_id = st.session_state["open_chat_id"]
@@ -123,9 +111,7 @@ if "open_chat_id" in st.session_state:
                 st.error(f"Error: {str(e)}")
 
 
-# ==================================================
-# 🆕 START NEW MESSAGE (ROLE-AWARE)
-# ==================================================
+# start a new message
 st.divider()
 
 st.subheader("🆕 Start New Conversation")

@@ -160,5 +160,37 @@ def delete_product(pid):
         return jsonify({"message": "Product deleted successfully"}), 200
     except Error as e:
         return jsonify({"error": str(e)}), 500
+    
+@seller_bp.route("/messages", methods=["GET"])
+def get_messages():
+    try:
+        user_id = request.args.get("user_id")
+        
+        cursor = db.get_db().cursor()
 
+        query = """
+            SELECT 
+                m.ConvoID as chat_id,
+                m.Body as last_message,
+                m.ConvoStartDate,
+                CONCAT(b.FirstName, ' ', b.LastName) as buyer_name,
+                CONCAT(s.FirstName, ' ', s.LastName) as seller_name,
+                m.BuyerID,
+                m.SellerID
+            FROM Messages m
+            LEFT JOIN Buyer b ON m.BuyerID = b.BuyerID
+            LEFT JOIN Seller s ON m.SellerID = s.SellerID
+            WHERE m.SellerID = 1
+            ORDER BY m.ConvoStartDate DESC
+        """
+        
+        cursor.execute(query)
+        messages = cursor.fetchall()
+        cursor.close()
+
+        return jsonify(messages), 200
+        
+    except Error as e:
+        current_app.logger.error(f'Database error in get_messages: {str(e)}')
+        return jsonify({"error": str(e)}), 500
     
