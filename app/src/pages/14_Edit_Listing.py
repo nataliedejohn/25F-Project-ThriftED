@@ -91,7 +91,7 @@ else:
             st.session_state.reset_form = False
 
         # API endpoint for updating product info
-
+        UPDATE_URL = f"http://web-api:4000/seller-routes/product-seller/{pid}"
 
         # Form to change product information
         with st.form("update_listing_form"):
@@ -108,7 +108,7 @@ else:
                 else:
                     data = {"Status" : status}
                     try: 
-                        requests.put(API_URL, json=data)
+                        requests.put(UPDATE_URL, json=data)
                     
                     except requests.exceptions.RequestException as e:
                         st.error(f"Error connecting to the API: {str(e)}")

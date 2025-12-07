@@ -57,3 +57,25 @@ def get_all_products():
     except Error as e:
         current_app.logger.error(f'Database error in get_all_ngos: {str(e)}')
         return jsonify({"error": str(e)}), 500
+
+# Update product listing for a specific product
+@admin_route.route("/product-admin/<int:pid>", methods=["PUT"])
+def put_seller_product(pid):
+    try:
+        data = request.get_json()
+
+        # Check if product exists
+        cursor = db.get_db().cursor()
+        cursor.execute("SELECT * FROM Product WHERE ProductID = %s", (pid,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Product not found"}), 404
+        
+        # Update query
+        query = f"UPDATE Product SET Verified WHERE ProductID = %s"
+        cursor.execute(query, (pid,))
+        db.get_db().commit()
+        cursor.close()
+        
+        return jsonify({"message", "Product updated successfully"}), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
