@@ -16,33 +16,9 @@ def get_all_products():
         current_app.logger.info('Starting get_all_products request')
         cursor = db.get_db().cursor()
 
-        # Note: Query parameters are added after the main part of the URL.
-        # Here is an example:
-        # http://localhost:4000/ngo/ngos?founding_year=1971
-        # founding_year is the query param.
-
-        # Get query parameters for filtering
-        #country = request.args.get("country")
-        #focus_area = request.args.get("focus_area")
-        #founding_year = request.args.get("founding_year")
-
-        #current_app.logger.debug(f'Query parameters - country: {country}, focus_area: {focus_area}, founding_year: {founding_year}')
-
         # Prepare the Base query
         query = "SELECT * FROM Product"
         params = []
-        '''
-        # Add filters if provided
-        if country:
-            query += " AND Country = %s"
-            params.append(country)
-        if focus_area:
-            query += " AND Focus_Area = %s"
-            params.append(focus_area)
-        if founding_year:
-            query += " AND Founding_Year = %s"
-            params.append(founding_year)
-        '''
 
         current_app.logger.debug(f'Executing query: {query} with params: {params}')
         cursor.execute(query)
@@ -56,4 +32,50 @@ def get_all_products():
         return the_response
     except Error as e:
         current_app.logger.error(f'Database error in get_all_ngos: {str(e)}')
+        return jsonify({"error": str(e)}), 500
+    
+@admin_route.route("/delete-product/<int:pid>", methods=["DELETE"])
+def delete_product(pid):
+    try:
+        current_app.logger.info(f'Starting delete_product request for ProductID: {pid}')
+        cursor = db.get_db().cursor()
+
+        # Delete the product
+        query = "DELETE FROM Product WHERE ProductID = %s"
+        cursor.execute("DELETE FROM AnalystProductAnalysis WHERE ProductID = %s", (pid,))
+        cursor.execute("DELETE FROM TagsOfProduct WHERE ProductID = %s", (pid,))
+        cursor.execute("DELETE FROM ProductPhoto WHERE ProductID = %s", (pid,))
+        cursor.execute("UPDATE Product SET OrderID = NULL WHERE ProductID = %s", (pid,))
+        
+        cursor.execute(query, (pid,))
+        db.get_db().commit()
+        cursor.close()
+
+        current_app.logger.info(f'Successfully deleted ProductID: {pid}')
+        return jsonify({"message": "Product deleted successfully"}), 200
+    except Error as e:
+        current_app.logger.error(f'Database error in delete_product: {str(e)}')
+        return jsonify({"error": str(e)}), 500
+    
+@admin_route.route("/product/<int:pid>", methods=["GET"])
+def get_product_detail(pid):
+    try:
+        cursor = db.get_db().cursor()
+        
+        query = """
+            SELECT p.*, pp.PhotoURL
+            FROM Product p
+            LEFT JOIN ProductPhoto pp ON p.ProductID = pp.ProductID
+            WHERE p.ProductID = %s
+        """
+        cursor.execute(query, (pid,))
+        product = cursor.fetchone()
+        
+        if not product:
+            cursor.close()
+            return jsonify({"error": "Product not found"}), 404
+        
+        cursor.close()
+        return jsonify(product), 200
+    except Error as e:
         return jsonify({"error": str(e)}), 500
