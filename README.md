@@ -1,8 +1,79 @@
-# Fall 2025 CS 3200 Project Template
+# Fall 2025 CS 3200 Project ThriftED
+- A student-verified campus marketplace for safer, sustainable buying and seller.
 
-This is a template repo for Dr. Fontenot's Fall 2025 CS 3200 Course Project. 
+# Overview
+ThriftED is a campus-focused resale platform designed for Northeastern students to buy and sell textbooks, furniture, electronics, clothing, and other everyday student essentials. Compared to popular platforms like Craigslist or Facebook, ThriftED restricts all the listings, messaging, and pickup locations to verified students on campus to create a safer, more efficient, and data-driven marketplace of users.
 
-It includes most of the infrastructure setup (containers), sample databases, and example UI pages. Explore it fully and ask questions!
+# This project implements the full ThriftED system using:
+- Streamlit (front-end)
+- Flask (REST API)
+- MySQL (relational database and schema)
+- Docker Compose (local deployment)
+
+The application includes role-based experiences for Buyers, Sellers, Moderators, and Data Analysts, each with their own unique features, stories and data workflows.
+
+# Features
+Buyer
+- Filter items by price, category, and location
+- View product recommendations based on search + purchase history
+- Message sellers in-app
+- Choose campus pickup locations
+- See verified-student badges
+
+# Seller
+- Create and manage listings
+- Mark items as active, sold, on hold, etc.
+- Get price guidance from historical data
+- View analytics: listing views, saves, performance
+- Message buyers without sharing personal info
+
+# Moderator
+- Approve, move, or remove listings
+- Restrict or ban users
+- Verify high-value items
+- Manage user disputes and messaging reports
+- Edit global guidelines
+
+# Data Analyst
+- Dashboard for trends: popular items, price ranges, listing velocity
+- Satisfaction & feedback analysis
+- Personalized recommendations powered by search/view data
+- Detect outliers and abnormal listing behavior
+
+# Installing
+
+# Executing program
+
+# REST API Overview
+A full API matrix is included in the Phase 3 document. Key endpoints include:
+Route
+Method
+Description
+/product-buyer
+GET
+Filters, similarity, recommendations
+/product-seller
+GET/POST/DELETE
+Manage seller listings
+/orders
+GET/POST/PUT
+Order creation + pickup updates
+/messages
+GET/PUT
+Messaging + reports
+/analytics/...
+GET
+Product, price, and satisfaction dashboards
+/guidelines
+CRUD
+Moderator system-level controls
+
+(See Phase 3 document for the full matrix.)
+
+# Team
+Team Name: SQL Squad
+- Project Name: ThriftED
+- Members: Lindsay Cheung, Natalie DeJohn, Cozette Kinney, Alex Yang, Ryan Yim
 
 ## Prerequisites
 
@@ -22,7 +93,8 @@ It includes most of the infrastructure setup (containers), sample databases, and
      ```
      Note that the `..` means go to the parent folder of the folder you're currently in (which is `api/` after the first command)
 - VSCode with the Python Plugin installed
-  - You may use some other Python/code editor.  However, Course staff will only support VS Code. 
+  - You may use some other Python/code editor.  However, Course staff will only support VS Code.
+- Docker Desktop
 
 
 ## Structure of the Repo
@@ -31,9 +103,12 @@ It includes most of the infrastructure setup (containers), sample databases, and
   - `./app` - the Streamlit app
   - `./api` - the Flask REST API
   - `./database-files` - SQL scripts to initialize the MySQL database
-  - `./datasets` - folder for storing datasets
-
 - The repo also contains a `docker-compose.yaml` file that is used to set up the Docker containers for the front end app, the REST API, and MySQL database. 
+
+
+----------------
+
+
 
 ## Suggestion for Learning the Project Code Base
 
@@ -114,20 +189,3 @@ Wrapping your head around this will take a little time and exploration of this c
 1. Next, check out the `app/src/Home.py` file. Notice that there are 3 buttons added to the page and when one is clicked, it redirects via `st.switch_page(...)` to that Roles Home page in `app/src/pages`. But before the redirect, I set a few different variables in the Streamlit `session_state` object to track role, first name of the user, and that the user is now authenticated.
 1. Notice near the top of `app/src/Home.py` and all other pages, there is a call to `SideBarLinks(...)` from the `app/src/nav.py` module. This is the function that will use the role set in `session_state` to determine what links to show the user in the sidebar.
 1. The pages are organized by Role. Pages that start with a `0` are related to the _Political Strategist_ role. Pages that start with a `1` are related to the _USAID worker_ role. And, pages that start with a `2` are related to The _System Administrator_ role.
-
-
-## (Completely Optional) Incorporating ML Models into your Project
-
-_Note_: This project only contains the infrastructure for a hypothetical ML model.
-
-1. Collect and preprocess necessary datasets for your ML models.
-1. Build, train, and test your ML model in a Jupyter Notebook.
-   - You can store your datasets in the `datasets` folder. You can also store your Jupyter Notebook in the `ml-src` folder.
-1. Once your team is happy with the model's performance, convert your Jupyter Notebook code for the ML model to a pure Python script.
-   - You can include the `training` and `testing` functionality as well as the `prediction` functionality.
-   - Develop and test this pure Python script first in the `ml-src` folder.
-   - You may or may not need to include data cleaning, though.
-1. Review the `api/backend/ml_models` module. In this folder,
-   - We've put a sample (read _fake_) ML model in the `model01.py` file. The `predict` function will be called by the Flask REST API to perform '_real-time_' prediction based on model parameter values that are stored in the database. **Important**: you would never want to hard code the model parameter weights directly in the prediction function.
-1. The prediction route for the REST API is in `api/backend/customers/customer_routes.py`. Basically, it accepts two URL parameters and passes them to the `prediction` function in the `ml_models` module. The `prediction` route/function packages up the value(s) it receives from the model's `predict` function and send its back to Streamlit as JSON.
-1. Back in streamlit, check out `app/src/pages/11_Prediction.py`. Here, I create two numeric input fields. When the button is pressed, it makes a request to the REST API URL `/c/prediction/.../...` function and passes the values from the two inputs as URL parameters. It gets back the results from the route and displays them. Nothing fancy here.
