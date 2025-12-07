@@ -44,32 +44,6 @@ Buyer
 
 # Executing program
 
-# REST API Overview
-A full API matrix is included in the Phase 3 document. Key endpoints include:
-Route
-Method
-Description
-/product-buyer
-GET
-Filters, similarity, recommendations
-/product-seller
-GET/POST/DELETE
-Manage seller listings
-/orders
-GET/POST/PUT
-Order creation + pickup updates
-/messages
-GET/PUT
-Messaging + reports
-/analytics/...
-GET
-Product, price, and satisfaction dashboards
-/guidelines
-CRUD
-Moderator system-level controls
-
-(See Phase 3 document for the full matrix.)
-
 # Team
 Team Name: SQL Squad
 - Project Name: ThriftED
