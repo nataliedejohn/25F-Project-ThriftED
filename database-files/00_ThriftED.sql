@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS BankAccount (
     FirstName      VARCHAR(50),
     LastName       VARCHAR(50),
     BankName       VARCHAR(100),
-    AccountNumber  VARCHAR(30),
+    AccountNumber  VARCHAR(50),
     RoutingNumber  VARCHAR(30),
     AccountType    VARCHAR(30),
     PRIMARY KEY (BankID),
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS BankAccount (
 );
 
 CREATE TABLE IF NOT EXISTS Messages (
-    ConvoID         INT UNSIGNED NOT NULL,
+    ConvoID         INT UNSIGNED AUTO_INCREMENT,
     BuyerID         INT UNSIGNED,
     ModeratorID     INT UNSIGNED,
     SellerID        INT UNSIGNED,
