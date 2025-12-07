@@ -35,4 +35,4 @@ if st.button("➕ Add New Listing", type="primary", use_container_width=True):
 # View Messages
 if st.button("💬 View Messages", type="primary", use_container_width=True):
     # According to API Matrix → GET /messages and GET /messages/{chat-id}
-    st.switch_page("pages/03_Messages.py")
+    st.switch_page("pages/13_Seller_Messages.py")
