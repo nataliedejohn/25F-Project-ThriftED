@@ -55,3 +55,49 @@ def put_seller_product(pid):
         return jsonify({"message", "Product updated successfully"}), 200
     except Error as e:
         return jsonify({"error": str(e)}), 500
+    
+@admin_route.route("/delete-product/<int:pid>", methods=["DELETE"])
+def delete_product(pid):
+    try:
+        current_app.logger.info(f'Starting delete_product request for ProductID: {pid}')
+        cursor = db.get_db().cursor()
+
+        # Delete the product
+        query = "DELETE FROM Product WHERE ProductID = %s"
+        cursor.execute("DELETE FROM AnalystProductAnalysis WHERE ProductID = %s", (pid,))
+        cursor.execute("DELETE FROM TagsOfProduct WHERE ProductID = %s", (pid,))
+        cursor.execute("DELETE FROM ProductPhoto WHERE ProductID = %s", (pid,))
+        cursor.execute("UPDATE Product SET OrderID = NULL WHERE ProductID = %s", (pid,))
+       
+        cursor.execute(query, (pid,))
+        db.get_db().commit()
+        cursor.close()
+
+        current_app.logger.info(f'Successfully deleted ProductID: {pid}')
+        return jsonify({"message": "Product deleted successfully"}), 200
+    except Error as e:
+        current_app.logger.error(f'Database error in delete_product: {str(e)}')
+        return jsonify({"error": str(e)}), 500
+   
+@admin_route.route("/product/<int:pid>", methods=["GET"])
+def get_product_detail(pid):
+    try:
+        cursor = db.get_db().cursor()
+       
+        query = """
+            SELECT p.*, pp.PhotoURL
+            FROM Product p
+            LEFT JOIN ProductPhoto pp ON p.ProductID = pp.ProductID
+            WHERE p.ProductID = %s
+        """
+        cursor.execute(query, (pid,))
+        product = cursor.fetchone()
+       
+        if not product:
+            cursor.close()
+            return jsonify({"error": "Product not found"}), 404
+       
+        cursor.close()
+        return jsonify(product), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500

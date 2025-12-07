@@ -30,6 +30,11 @@ try:
                     st.session_state.selected_product = product.get("ProductID")
                     st.switch_page("pages/21_View_Product.py")
 
+                # Button to delete a specific product
+                if st.button("Delete Product Listing", key=f"btn-{product.get('ProductID')}"):
+                    st.session_state.selected_pid = product.get("ProductID")
+                    st.switch_page("pages/24_Delete_Product.py")
+
     else:
         st.write("Status:", response.status_code)
         st.write("Response:", response.text)
