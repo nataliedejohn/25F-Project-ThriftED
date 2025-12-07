@@ -14,33 +14,28 @@ SideBarLinks()
 st.header("View Orders")
 st.write(f"### Hi, {st.session_state.get('first_name', 'User')}!")
 
-# Correct API endpoint (from REST API matrix)
-API_URL = "http://web-api:4000/orders"
+# API endpoint
+API_URL = "http://web-api:4000/buyer-routes/buyer-orders"
+# buyerid = st.text_area("BuyerID: ")
+
 
 # Fetch Orders
 try:
+    # response = requests.get(f"{API_URL}?BuyerID={buyerid}")
     response = requests.get(API_URL)
 
     if response.status_code == 200:
         orders = response.json()
 
-        if isinstance(orders, dict):
-            # In case backend wraps response ({"data": [...]})
-            orders = orders.get("data", [])
-
         st.write(f"Found **{len(orders)}** orders.")
-
         for order in orders:
-            order_id = order.get("OrderID", "Unknown Order")
-            buyer_id = order.get("BuyerID", "N/A")
-
-            with st.expander(f"Order {order_id} — Buyer {buyer_id}"):
-                st.write(f"**Order ID:** {order_id}")
-                st.write(f"**Buyer ID:** {buyer_id}")
-                st.write(f"**Product ID:** {order.get('ProductID', 'N/A')}")
-                st.write(f"**Order Date:** {order.get('OrderDate', 'N/A')}")
-                st.write(f"**Pickup Spot:** {order.get('PickupSpot', 'N/A')}")
-                st.write(f"**Status:** {order.get('Status', 'N/A')}")
+            with st.container(border=True):
+                st.write(f"**Order ID:** {order['OrderID']}")
+                st.write(f"**Order Date:** {order['OrderDate']}")
+                st.write(f"**Pickup Street:** {order['PickupStreet']}")
+                st.write(f"**Pickup City:** {order['PickupCity']}")
+                st.write(f"**Pickup State:** {order['PickupState']}")
+                st.write(f"**Pickup Zip:** {order['PickupZip']}")
 
     else:
         st.error(f"Failed to fetch order data (Status {response.status_code})")
@@ -48,4 +43,3 @@ try:
 
 except requests.exceptions.RequestException as e:
     st.error(f"Error connecting to the API: {str(e)}")
-    st.info("Make sure the API server is running at http://web-api:4000")
