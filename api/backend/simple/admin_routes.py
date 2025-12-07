@@ -60,7 +60,7 @@ def get_all_products():
 
 # Update product listing for a specific product
 @admin_route.route("/product-admin/<int:pid>", methods=["PUT"])
-def put_seller_product(pid):
+def put_verify_product(pid):
     try:
         data = request.get_json()
 
@@ -77,5 +77,27 @@ def put_seller_product(pid):
         cursor.close()
         
         return jsonify({"message", "Product updated successfully"}), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+    
+@admin_route.route("/remove-product/<int:pid>", methods=["DELETE"])
+def delete_product(pid):
+    try:
+
+        # Check if product exists
+                # Check if product exists
+        cursor = db.get_db().cursor()
+        cursor.execute("SELECT * FROM Product WHERE ProductID = %s", (pid,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Product not found"}), 404
+        
+        # Delete query
+        query = f"DELETE Product WHERE ProductID = %s"
+        cursor.execute(query, (pid,))
+        db.get_db().commit()
+        cursor.close()
+
+        return jsonify({"message", "Product deleted successfully"}), 200
+
     except Error as e:
         return jsonify({"error": str(e)}), 500
