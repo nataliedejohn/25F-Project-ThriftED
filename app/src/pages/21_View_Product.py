@@ -121,18 +121,10 @@ with view_column:
                 st.session_state.show_success_modal = True
                 show_success_dialog()
 
-        # API endpoint to delete a product
-        DELETE_API = f"http://web-api:4000/admin-routes/remove-product/{pid}"
-
         # Button to delete product
-        if st.button("Delete Product?"):
-            st.write("Are you sure you want to remove this product?")
-            if st.button("Confirm Delete"):
-                try: 
-                    requests.delete(DELETE_API)
-                except requests.exceptions.RequestException as e:
-                    st.error(f"Error connecting to the API: {str(e)}")
-                    st.info("Please ensure the API server is running")
+        if st.button("Delete Product Listing", key=f"btn-{product.get('ProductID')}"):
+            st.session_state.selected_pid = product.get("ProductID")
+            st.switch_page("pages/24_Delete_Product.py")
 
 # Button to return to Product Admin
 if st.button("Return to All Products"):
