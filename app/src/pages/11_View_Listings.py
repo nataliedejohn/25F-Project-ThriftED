@@ -32,7 +32,8 @@ try:
                 #Edit listing button
                 if st.button("✏️ Edit Listing", key=f"edit_{product['ProductID']}"):
                     st.session_state["edit_listing_id"] = product["ProductID"]
-                    st.switch_page("pages/13_Edit_Listing.py")
+                    st.session_state.selected_product = product.get("ProductID")
+                    st.switch_page("pages/14_Edit_Listing.py")
 
     else:
         st.write("Status:", response.status_code)
