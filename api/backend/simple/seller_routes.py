@@ -141,3 +141,24 @@ def create_message():
     except Error as e:
         return jsonify({"error": str(e)}), 500
     
+# Delete listing
+@seller_bp.route("/remove_listing", methods=["DELETE"])
+def delete_product(pid):
+    try:
+        # Check if product exists
+        cursor = db.get_db.cursor()
+        cursor.execute("SELECT * FROM Product WHERE ProductID = %s", (pid,))
+        if not cursor.fetchone():
+            return jsonify({"error": "Product not found"}), 404
+        
+        # Delete query
+        query = f"DELETE Product WHERE ProductID = %s"
+        cursor.execute(query, (pid))
+        db.get_db().commit()
+        cursor.close()
+
+        return jsonify({"message": "Product deleted successfully"}), 200
+    except Error as e:
+        return jsonify({"error": str(e)}), 500
+
+    
