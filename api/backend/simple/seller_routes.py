@@ -98,7 +98,7 @@ def create_listing():
         return jsonify({"error": str(e)}), 500
 
 # Create a new message 
-@seller_bp.route("/messages", methods=["POST"])
+@seller_bp.route("/create-messages", methods=["POST"])
 def create_message():
     try:
         data = request.get_json()

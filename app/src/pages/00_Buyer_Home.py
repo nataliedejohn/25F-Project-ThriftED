@@ -30,4 +30,4 @@ if st.button('View Messages',
              type='primary',
              use_container_width=True, 
              icon="📨"):
-  st.switch_page('pages/03_Messages.py')
+  st.switch_page('pages/03_Buyer_Messages.py')

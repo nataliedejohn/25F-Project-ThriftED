@@ -1,6 +1,5 @@
 """
-Unified Messages Page for Buyers and Sellers
-Automatically switches UI based on user role
+Messages Page for Buyers
 """
 
 import logging
@@ -25,7 +24,7 @@ st.write(f"### Hi, {first_name}!")
 # ----------------------------
 # API Endpoints
 # ----------------------------
-BASE_URL = "http://web-api:4000/seller-routes"
+BASE_URL = "http://web-api:4000/buyer-routes"
 MESSAGES_URL = f"{BASE_URL}/messages"
 
 
@@ -53,17 +52,17 @@ threads = load_message_threads()
 
 st.subheader("Your Conversations")
 
-if len(threads) == 0:
-    st.info("You have no messages yet.")
-else:
-    for t in threads:
-        other_party = t["buyer_name"] if role == "seller" else t["seller_name"]
-        preview = t["last_message"][:40] + "..."
-        chat_id = t["chat_id"]
+# if len(threads) == 0:
+#     st.info("You have no messages yet.")
+# else:
+#     for t in threads:
+#         other_party = t["buyer_name"] if role == "seller" else t["seller_name"]
+#         preview = t["last_message"][:40] + "..."
+#         chat_id = t["chat_id"]
 
-        if st.button(f"💬 Chat with {other_party}\n*{preview}*", key=f"thread_{chat_id}", use_container_width=True):
-            st.session_state["open_chat_id"] = chat_id
-            st.rerun()
+#         if st.button(f"💬 Chat with {other_party}\n*{preview}*", key=f"thread_{chat_id}", use_container_width=True):
+#             st.session_state["open_chat_id"] = chat_id
+#             st.rerun()
 
 
 # ==================================================
@@ -149,13 +148,13 @@ if st.session_state.reset_form:
     st.session_state.reset_form = False
 
 # API endpoind
-API_URL = "http://web-api:4000/seller-routes/create-messages"
+API_URL = "http://web-api:4000/buyer-routes/create-messages"
 
 with st.form("new_message_form"):
     st.write("Select the recipient and write your message:")
 
     # required fields
-    recipient_id = st.text_input("Buyer ID *")
+    recipient_id = st.text_input("Seller ID *")
     message_body = st.text_area("Message Body *")
 
     # form submission button
@@ -168,7 +167,7 @@ with st.form("new_message_form"):
         else:
             try:
                 payload = {
-                    "BuyerID": recipient_id,
+                    "SellerID": recipient_id,
                     "Body": message_body
                 }
                 response = requests.post(API_URL, json=payload)
