@@ -176,3 +176,23 @@ def delete_buyer(bid):
     except Error as e:
         current_app.logger.error(f'Database error in delete_buyer: {str(e)}')
         return jsonify({"error": str(e)}), 500
+    
+@moderator_bp.route("/user-guidelines", methods=["GET"])
+def get_user_guidelines():
+    try:
+        current_app.logger.info("Starting get_user_guidelines request")
+        cursor = db.get_db().cursor()
+
+        query = """ SELECT BuyerID, LastName, Email, TermsAndConditions FROM Buyer"""
+        cursor.execute(query)
+        data = cursor.fetchall()
+        cursor.close()
+
+        current_app.logger.info(f"Suffessfully retrieved {len(data)} TermsAndConditions agreements")
+        response = make_response(data)
+        response.status_code = 200
+        response.mimetype = "application/json"
+        return response
+    except Error as e:
+        current_app.logger.error(f"Database error in get_all_orders: {str(e)}")
+        return jsonify({"error": str(e)}), 500

@@ -136,20 +136,3 @@ def get_seller_ratings():
     except Error as e:
         current_app.logger.error(f"Database error in get_seller_ratings: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
-
-# GET a list of categories and product counts (for demand / supply insights)
-@analyst_bp.route("/categories", methods=["GET"])
-def get_category_stats():
-    current_app.logger.info("GET /categories")
-
-    data = {
-        "categories": [
-            {"name": "Home Furniture", "product_count": 42},
-            {"name": "Electronics", "product_count": 57},
-            {"name": "Clothing", "product_count": 33},
-        ]
-    }
-    response = make_response(jsnoify(data))
-    response.status_code = 200
-    return response
