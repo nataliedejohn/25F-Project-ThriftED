@@ -15,56 +15,70 @@ def AboutPageNav():
 
 
 #### ------------------------ Examples for Role of pol_strat_advisor ------------------------
-def PolStratAdvHomeNav():
+def BuyerHomeNav():
     st.sidebar.page_link(
-        "pages/00_Pol_Strat_Home.py", label="Political Strategist Home", icon="👤"
+        "pages/00_Buyer_Home.py", label="Buyer Home", icon="👤"
     )
 
 
-def WorldBankVizNav():
+def ShopProductsNav():
     st.sidebar.page_link(
-        "pages/01_World_Bank_Viz.py", label="World Bank Visualization", icon="🏦"
+        "pages/01_Shop_Products.py", label="Shop Products", icon="🏦"
     )
 
 
-def MapDemoNav():
-    st.sidebar.page_link("pages/02_Map_Demo.py", label="Map Demonstration", icon="🗺️")
+def ViewOrdersNav():
+    st.sidebar.page_link("pages/02_View_Orders.py", label="View Orders", icon="🗺️")
 
 
-## ------------------------ Examples for Role of usaid_worker ------------------------
+def ViewMessagesNav():
+    st.sidebar.page_link("pages/03_Buyer_Messages.py", label="View Messages", icon="🛜")
 
-def usaidWorkerHomeNav():
+## ------------------------ Examples for Role of Seller ------------------------
+
+def SellerHomeNav():
     st.sidebar.page_link(
-      "pages/10_USAID_Worker_Home.py", label="USAID Worker Home", icon="🏠"
+      "pages/10_Seller_Home.py", label="Seller Home", icon="🏠"
     )
 
-def NgoDirectoryNav():
-    st.sidebar.page_link("pages/14_NGO_Directory.py", label="NGO Directory", icon="📁")
+def ViewListingsNav():
+    st.sidebar.page_link("pages/11_View_Listings.py", label="View Listings", icon="📁")
 
-def AddNgoNav():
-    st.sidebar.page_link("pages/15_Add_NGO.py", label="Add New NGO", icon="➕")
+def AddListingNav():
+    st.sidebar.page_link("pages/12_Add_Listing.py", label="Add New Listing", icon="➕")
 
-def ApiTestNav():
-    st.sidebar.page_link("pages/12_API_Test.py", label="Test the API", icon="🛜")
-
-def PredictionNav():
-    st.sidebar.page_link(
-        "pages/11_Prediction.py", label="Regression Prediction", icon="📈"
-    )
-
-def ClassificationNav():
-    st.sidebar.page_link(
-        "pages/13_Classification.py", label="Classification Demo", icon="🌺"
-    )
-
-
-
+def ViewMessagesNav():
+    st.sidebar.page_link("pages/13_Seller_Messages.py", label="View Messages", icon="🛜")
 
 
 #### ------------------------ System Admin Role ------------------------
 def AdminPageNav():
     st.sidebar.page_link("pages/20_Admin_Home.py", label="System Admin", icon="🖥️")
 
+def AdminProductNav():
+    st.sidebar.page_link("pages/23_Product_Admin.py", label="View Products")
+
+def AdminUserNav():
+    st.sidebar.page_link("pages/25_View_Users.py", label="View Users")
+
+def UserGuidelinesNav():
+    st.sidebar.page_link("pages/22_User_Guidelines.py", label="View User Guidelines")
+
+#### ------------------------ Data Analyst Role ------------------------
+def AnalystPageNav():
+    st.sidebar.page_link("pages/30_Analyst_Home.py", label="System Admin", icon="🖥️")
+
+def PopularProductsNav():
+    st.sidebar.page_link("pages/31_Product_Analytics.py", label="Product Analytics")
+
+def PricingNav():
+    st.sidebar.page_link("pages/32_Pricing_Analytics.py", label="Pricing Analytics")
+
+def OrdersNav():
+    st.sidebar.page_link("pages/33_Order_History_Analytics.py", label="Order Analytics")
+
+def RatigngsNav():
+    st.sidebar.page_link("pages/34_Seller_Ratings.py", label="Rating Analytics")
 
 # --------------------------------Links Function -----------------------------------------------
 def SideBarLinks(show_home=False):
@@ -88,24 +102,33 @@ def SideBarLinks(show_home=False):
     if st.session_state["authenticated"]:
 
         # Show World Bank Link and Map Demo Link if the user is a political strategy advisor role.
-        if st.session_state["role"] == "pol_strat_advisor":
-            PolStratAdvHomeNav()
-            WorldBankVizNav()
-            MapDemoNav()
+        if st.session_state["role"] == "buyer":
+            BuyerHomeNav()
+            ShopProductsNav()
+            ViewOrdersNav()
+            ViewMessagesNav()
 
         # If the user role is usaid worker, show the Api Testing page
-        if st.session_state["role"] == "usaid_worker":
-            usaidWorkerHomeNav()
-            NgoDirectoryNav()
-            AddNgoNav()
-            PredictionNav()
-            ApiTestNav()
-            ClassificationNav()
+        if st.session_state["role"] == "seller":
+            ViewListingsNav()
+            AddListingNav()
+            ViewMessagesNav()
             
 
         # If the user is an administrator, give them access to the administrator pages
         if st.session_state["role"] == "administrator":
             AdminPageNav()
+            AdminProductNav()
+            AdminUserNav()
+            UserGuidelinesNav()
+
+        if st.session_state["role"] == "data_analyst":
+            AnalystPageNav()
+            PopularProductsNav()
+            PricingNav()
+            OrdersNav()
+            RatigngsNav()
+            
 
     # Always show the About page at the bottom of the list of links
     AboutPageNav()
