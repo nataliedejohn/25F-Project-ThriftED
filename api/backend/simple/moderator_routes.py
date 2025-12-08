@@ -150,3 +150,29 @@ def get_all_sellers():
     except Error as e:
         current_app.logger.error(f'Database error in get_all_sellers: {str(e)}')
         return jsonify({"error": str(e)}), 500
+    
+@moderator_bp.route("/delete-buyer/<int:bid>", methods=["DELETE"])
+def delete_buyer(bid):
+    try:
+
+        current_app.logger.info(f'Starting delete_buyer request for BuyerID: {bid}')
+        cursor = db.get_db().cursor()
+
+        cursor.execute("SELECT OrderID FROM Orders WHERE BuyerID = %s", (bid,))
+        orders = cursor.fetchall()
+        for order in orders:
+            cursor.execute("UPDATE Product SET OrderID = NULL WHERE OrderID = %s", (order['OrderID'],))
+        cursor.execute("DELETE FROM Orders WHERE BuyerID = %s", (bid,))
+        cursor.execute("DELETE FROM History WHERE BuyerID = %s", (bid,))
+        cursor.execute("DELETE FROM Messages WHERE BuyerID = %s", (bid,))
+        cursor.execute("DELETE FROM PaymentMethod WHERE BuyerID = %s", (bid,))
+        query = "DELETE FROM Buyer WHERE BuyerID = %s"
+        cursor.execute(query, (bid,))
+        db.get_db().commit()
+        cursor.close()
+
+        current_app.logger.info(f'Successfully deleted BuyerID: {bid}')
+        return jsonify({"message": "Buyer deleted successfully"}), 200
+    except Error as e:
+        current_app.logger.error(f'Database error in delete_buyer: {str(e)}')
+        return jsonify({"error": str(e)}), 500

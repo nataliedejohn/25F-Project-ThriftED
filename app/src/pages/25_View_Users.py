@@ -37,6 +37,15 @@ try:
                 st.write(f"**Age** {b['Age']}")
                 st.write(f"**Buyer Verified:** {'Yes' if b['Verification'] == 1 else 'No'}")
 
+                if st.button("Delete Buyer", key=f"delete_buyer_{b['BuyerID']}"):
+                    delete_response = requests.delete(f"http://web-api:4000/moderator-routes/delete-buyer/{b['BuyerID']}")
+                    if delete_response.status_code == 200:
+                        st.success(f"Buyer {b['FirstName']} {b['LastName']} deleted successfully.")
+                        st.rerun() # refreshes the page to reflect the new change
+                    else:
+                        st.error(f"Failed to delete Buyer {b['FirstName']} {b['LastName']}.")
+                        st.error(f"Error: {delete_response.json().get('error', 'Unknown error')}")
+
     else:
         st.error(
             f"Error fetching NGO data: {response.json().get('error', 'Unknown error')}"
