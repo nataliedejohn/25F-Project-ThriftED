@@ -69,7 +69,7 @@ if st.button('Act as Eileen Gu, the Seller',
     st.session_state['first_name'] = 'Eileen'
     st.switch_page('pages/10_Seller_Home.py')
 
-if st.button('Act as Mikaela Shiffrin, the System Administrator', 
+if st.button('Act as Mikaela Shiffrin, the System Moderator', 
             type = 'primary', 
             use_container_width=True):
     st.session_state['authenticated'] = True

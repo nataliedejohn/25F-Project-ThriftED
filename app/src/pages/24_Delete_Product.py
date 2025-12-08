@@ -12,7 +12,7 @@ pid = st.session_state.get("selected_pid")
 if pid is None:
     st.error("No Product selected")
 else:
-    GET_URL = f"http://api:4000/admin-routes/product/{pid}"
+    GET_URL = f"http://api:4000/moderator-routes/product/{pid}"
     
     try:
         response = requests.get(GET_URL)
@@ -47,7 +47,7 @@ else:
             
             with col1:
                 if st.button("Delete Product", type="primary"):
-                    DELETE_URL = f"http://api:4000/admin-routes/delete-product/{pid}"
+                    DELETE_URL = f"http://api:4000/moderator-routes/delete-product/{pid}"
                     
                     try:
                         delete_response = requests.delete(DELETE_URL)

@@ -9,7 +9,7 @@ SideBarLinks()
 st.title("Products Admin")
 
 # API endpoint
-API_URL = "http://web-api:4000/admin-routes/products"
+API_URL = "http://web-api:4000/moderator-routes/products"
 
 # Get unique values for filters from the API
 try:

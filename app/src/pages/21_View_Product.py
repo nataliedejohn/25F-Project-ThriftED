@@ -92,7 +92,7 @@ with view_column:
             st.session_state.reset_form = False
         
         # API endpoint for updating product info
-        UPDATE_URL = f"http://web-api:4000/admin-routes/product-admin/{pid}"
+        UPDATE_URL = f"http://web-api:4000/moderator-routes/product-admin/{pid}"
 
         # Form to change product information
         with st.form("[update_product_form]"):
