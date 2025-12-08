@@ -102,3 +102,51 @@ def get_product_detail(pid):
         return jsonify(product), 200
     except Error as e:
         return jsonify({"error": str(e)}), 500
+    
+@moderator_bp.route("/buyers", methods=["GET"])
+def get_all_buyers():
+    try:
+        current_app.logger.info('Starting get_all_users request')
+        cursor = db.get_db().cursor()
+
+        # Prepare the Base query
+        query = "SELECT * FROM Buyer"
+        params = []
+
+        current_app.logger.debug(f'Executing query: {query} with params: {params}')
+        cursor.execute(query)
+        users = cursor.fetchall()
+        cursor.close()
+
+        current_app.logger.info(f'Successfully retrieved {len(users)} users')
+        the_response = make_response(users)
+        the_response.status_code = 200
+        the_response.mimetype = "application/json"
+        return the_response
+    except Error as e:
+        current_app.logger.error(f'Database error in get_all_users: {str(e)}')
+        return jsonify({"error": str(e)}), 500
+    
+@moderator_bp.route("/sellers", methods=["GET"])
+def get_all_sellers():
+    try:
+        current_app.logger.info('Starting get_all_sellers request')
+        cursor = db.get_db().cursor()
+
+        # Prepare the Base query
+        query = "SELECT * FROM Seller"
+        params = []
+
+        current_app.logger.debug(f'Executing query: {query} with params: {params}')
+        cursor.execute(query)
+        sellers = cursor.fetchall()
+        cursor.close()
+
+        current_app.logger.info(f'Successfully retrieved {len(sellers)} sellers')
+        the_response = make_response(sellers)
+        the_response.status_code = 200
+        the_response.mimetype = "application/json"
+        return the_response
+    except Error as e:
+        current_app.logger.error(f'Database error in get_all_sellers: {str(e)}')
+        return jsonify({"error": str(e)}), 500
