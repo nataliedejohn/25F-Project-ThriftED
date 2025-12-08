@@ -19,7 +19,7 @@ col1, col2 = st.columns(2)
 with col1:
     if st.button("🔥 Engagement & Popularity Analytics", 
                  type="primary", use_container_width=True):
-        st.switch_page("pages/31_Engagement_Analytics.py")
+        st.switch_page("pages/31_Product_Analytics.py")
 
 with col2:
     if st.button("💲 Pricing & Listing Quality Analysis", 
@@ -30,9 +30,9 @@ with col2:
 with col1:
     if st.button("🛡️ Safety & Risk Ratings Analysis", 
                  type="primary", use_container_width=True):
-        st.switch_page("pages/33_Safety_Risk_Analytics.py")
+        st.switch_page("pages/33_Order_History_Analytics.py")
 
 with col2:
     if st.button("💬 User Satisfaction & Feedback", 
                  type="primary", use_container_width=True):
-        st.switch_page("pages/34_Feedback_Analytics.py")
+        st.switch_page("pages/34_Seller_Ratings.py")

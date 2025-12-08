@@ -32,14 +32,26 @@ def get_products_buyer():
         current_app.logger.error(f'Database error in get_all_orders: {str(e)}')
         return jsonify({"error": str(e)}), 500
 
-@buyer_bp.route("/orders", methods=["POST"])
-def create_orders():
-    current_app.logger.info("POST /orders")
-    order_data = request.get_json()
-    data = {"message": "Order successfully placed", "order_data": order_data}
-    response = make_response(jsonify(data))
-    response.status_code = 201
-    return response
+@buyer_bp.route("/buyer-orders", methods=["GET"])
+def get_orders():
+    try:
+        buyerid = request.args.get("BuyerID")
+        current_app.logger.info("Starting get_orders request")
+        cursor = db.get_db().cursor()
+
+        query = "SELECT * FROM Orders WHERE BuyerID = 2"
+        cursor.execute(query)
+        orders = cursor.fetchall()
+        cursor.close()
+
+        current_app.logger.info(f"Successfully retrieved {len(orders)} orders")
+        response = make_response(jsonify(orders))
+        response.status_code = 200
+        response.mimetype = "application/json"
+        return response
+    except Error as e:
+        current_app.logger.error(f"Database error in get_orders: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 @buyer_bp.route("/product-buyer/<int:pid>", methods=["GET"])
 def get_product_detail(pid):

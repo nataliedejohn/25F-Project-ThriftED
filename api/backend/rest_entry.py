@@ -10,6 +10,7 @@ from backend.ngos.ngo_routes import ngos
 from backend.simple.admin_routes import admin_route
 from backend.simple.buyer_routes import buyer_bp
 from backend.simple.seller_routes import seller_bp
+from backend.simple.analyst_routes import analyst_bp
 
 def create_app():
     app = Flask(__name__)
@@ -56,6 +57,7 @@ def create_app():
     app.register_blueprint(admin_route, url_prefix="/admin-routes")
     app.register_blueprint(buyer_bp, url_prefix="/buyer-routes")
     app.register_blueprint(seller_bp, url_prefix="/seller-routes")
+    app.register_blueprint(analyst_bp, url_prefix="/analyst-routes")
 
     # Don't forget to return the app object
     return app
